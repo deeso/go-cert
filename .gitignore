@@ -1,14 +1,26 @@
-# Binaries for programs and plugins
+# binaries
 *.exe
-*.dll
-*.so
-*.dylib
 
-# Test binary, build with `go test -c`
+# output directories
+build
+vendor
+node_modules
+
+# generated artifacts
+assets/bundle*.*
+assets/*@*.svg
+assets/*@*.png
+frontend/templates/react.tmpl
+bindata.go
+*.cover
 *.test
+*.log
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+# typescript generated test files
+tmp/
 
-# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
-.glide/
+# operating system artifacts
+.DS_Store
+
+# test mysql server data
+mysqldata/
