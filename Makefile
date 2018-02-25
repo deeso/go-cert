@@ -10,7 +10,7 @@ BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 REVISION = $(shell git rev-parse HEAD)
 REVSHORT = $(shell git rev-parse --short HEAD)
 USER = $(shell whoami)
-DOCKER_IMAGE_NAME = deeso/go-certs
+DOCKER_IMAGE_NAME = deeso/gogetcerts
 
 ifneq ($(OS), Windows_NT)
     # If on macOS, set the shell to bash explicitly
@@ -19,14 +19,14 @@ ifneq ($(OS), Windows_NT)
     endif
 
     # The output binary name is different on Windows, so we're explicit here
-    OUTPUT = go-certs
+    OUTPUT = gogetcerts
 
     # To populate version metadata, we use unix tools to get certain data
     GOVERSION = $(shell go version | awk '{print $$3}')
     NOW = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 else
     # The output binary name is different on Windows, so we're explicit here
-    OUTPUT = go-certs.exe
+    OUTPUT = gogetcerts.exe
 
     # To populate version metadata, we use windows tools to get the certain data
     GOVERSION_CMD = "(go version).Split()[2]"
@@ -80,13 +80,13 @@ endif
     $(eval GOGC = off)
     $(eval CGO_ENABLED = 0)
 
-.pre-go-certs:
-    $(eval APP_NAME = go-certs)
+.pre-gogetcerts:
+    $(eval APP_NAME = gogetcerts)
 
-build: go-certs
+build: gogetcerts
 
-go-certs: .prefix .pre-build .pre-go-certs
-    go build -i -o build/${OUTPUT} ./cmd/go-certs
+gogetcerts: .prefix .pre-build .pre-gogetcerts
+    go build -i -o build/${OUTPUT} ./cmd/gogetcerts
 
 lint-go:
     go vet ./...
@@ -116,18 +116,18 @@ else
     rm -rf build vendor
 endif
 
-docker-build-release: .pre-go-certs
-    GOOS=linux go build -i -o build/linux/${OUTPUT} ./cmd/go-certs
+docker-build-release: .pre-gogetcerts
+    GOOS=linux go build -i -o build/linux/${OUTPUT} ./cmd/gogetcerts
     docker build -t "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" .
-    docker tag "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" deeso/go-certs:latest
+    docker tag "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" deeso/gogetcerts:latest
 
 docker-push-release: docker-build-release
     docker push "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-    docker push deeso/go-certs:latest
+    docker push deeso/gogetcerts:latest
 
 docker-build-circle:
     @echo ">> building docker image"
-    GOOS=linux go build -i -o build/linux/${OUTPUT} -ldflags ${KIT_VERSION} ./cmd/go-certs
+    GOOS=linux go build -i -o build/linux/${OUTPUT} -ldflags ${KIT_VERSION} ./cmd/gogetcerts
     docker build -t "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" .
     docker push "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
 
@@ -135,7 +135,7 @@ binary-bundle: generate
     rm -rf build/binary-bundle
     mkdir -p build/binary-bundle/linux
     mkdir -p build/binary-bundle/darwin
-    GOOS=linux go build -i -o build/binary-bundle/linux/${OUTPUT}_linux_amd64 ./cmd/go-certs
-    GOOS=darwin go build -i -o build/binary-bundle/darwin/${OUTPUT}_darwin_amd64 ./cmd/go-certs
-    cd build/binary-bundle && zip -r "go-certs_${VERSION}.zip" darwin/ linux/
-    cp build/binary-bundle/go-certs_${VERSION}.zip build/binary-bundle/go-certs_lastest.zip
+    GOOS=linux go build -i -o build/binary-bundle/linux/${OUTPUT}_linux_amd64 ./cmd/gogetcerts
+    GOOS=darwin go build -i -o build/binary-bundle/darwin/${OUTPUT}_darwin_amd64 ./cmd/gogetcerts
+    cd build/binary-bundle && zip -r "gogetcerts_${VERSION}.zip" darwin/ linux/
+    cp build/binary-bundle/gogetcerts_${VERSION}.zip build/binary-bundle/gogetcerts_lastest.zip
